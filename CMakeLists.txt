@@ -99,6 +99,19 @@ if( MSVC )
       $<$<CONFIG:Debug>:/MDd> #---|-- Dynamically link the runtime libraries
       $<$<CONFIG:Release>:/MD> #--|
     )
+elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+    message("Using LLVM Clang compiler")
+    if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        set(OPT_LV "O0")
+        set(OPT_DBG "-g")
+    else()
+        set(OPT_LV "O3")
+        set(OPT_DBG "-DNDEBUG") # disable assert
+    endif()
+
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OPT_DBG} -${OPT_LV} -fomit-frame-pointer -pthread -std=c99")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wno-pointer-sign -Wno-pointer-to-int-cast -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-variable -Wno-attributes -Wno-unknown-pragmas -Wno-typedef-redefinition -Wno-header-guard -Wno-sometimes-uninitialized -Wno-for-loop-analysis -Wno-implicit-function-declaration -Wno-undeclared-selector")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lm")
 elseif( UNIX OR MINGW )
     if(NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE "Release")
